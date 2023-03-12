@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import datetime
-import cohere
+import cohereTemp
 import praw
 
 
@@ -17,7 +17,7 @@ def result():
         title = request.form.get("title")
         subreddit = request.form.get("subreddit")
         data = praw.scrape_reddit(title, subreddit)
-        result = cohere.ai(data)
+        result = cohereTemp.ai(data)
 
         return render_template('result.html',dataToRender=result)
 
