@@ -33,10 +33,19 @@ def impressions(prompt):
         inputs=prompt,
         examples=examples,
         )
-    for x in response.classifications:
-        if x.prediction == 'positive review':
-            #dosomething
-            print("dummy code")
+    positiveCount = 0
+    negativeCount = 0
+    neutralCount = 0
+
+    for x in response.classifications:       
+        if x.prediction == 'positive':
+            positiveCount += 1
+        elif x.prediction == 'negative':
+            negativeCount += 1
+        else:
+            neutralCount += 1
+    result = ["Positive Reviews: " + positiveCount, "Neutral Reviews: " + neutralCount, "Negative Reviews: " + negativeCount]
+    return result
 
 def generate(prompt):
     response = co.generate( 
