@@ -1,81 +1,70 @@
 import cohere as cohere
-from cohere.classify import Example
+from .examples import sentiment_examples, topic_examples
+
+#TODO: move to env
 co = cohere.Client('S4kgh2LIaQL0b8FFV0KI9KnguLR89eIpUSfaIrPA')
 
-examples = [
-Example("The acting was incredible and the story was gripping", "positive"),
-Example("The special effects were top-notch but the plot was weak", "neutral"),
-Example("I was disappointed by the lackluster performances", "negative"),
-Example("This is a must-see movie, I highly recommend it!", "positive"),
-Example("The film was slow-paced and boring", "negative"),
-Example("The soundtrack was amazing and really added to the movie", "positive"),
-Example("The movie was just okay, nothing special", "neutral"),
-Example("I found the characters to be unlikable and the dialogue was cheesy", "negative"),
-Example("This movie exceeded my expectations, I was blown away", "positive"),
-Example("The cinematography was stunning but the script was lacking", "neutral")
-]
+topics = ["special effects", "cinematography", "soundtrack", "plot", "acting", "character"]
 
 
-
-prompt = "my favourite colour is orange, but I don't like it very much anymore. I prefer green now"
-text = "A hackathon is an event where participants, usually software developers, come together to collaborate on solving a specific problem or creating a new product or service. The purpose of a hackathon is to encourage creativity, innovation, and teamwork, while providing an opportunity for participants to learn new skills and technologies. The event typically involves intense, focused work over a short period of time, with the goal of producing a functioning prototype or proof of concept. Hackathons are often sponsored by companies or organizations seeking to foster innovation and identify talent."
-
-# input is a list of reddit comments
-def ai(input):
-
-    impression = impressions(input)
-    summary = summarize(input[1])
-
-    return resultData(impression, summary)
-
-def impressions(prompt):
+def sentiment_analysis(prompt):
     response = co.classify(
         inputs=prompt,
-        examples=examples,
-        )
+        examples=sentiment_examples,
+    )
     positiveCount = 0
     negativeCount = 0
     neutralCount = 0
 
-    for x in response.classifications:       
+    for x in response.classifications:
         if x.prediction == 'positive':
             positiveCount += 1
         elif x.prediction == 'negative':
             negativeCount += 1
         else:
             neutralCount += 1
-    result = ["Positive Reviews: " + positiveCount, "Neutral Reviews: " + neutralCount, "Negative Reviews: " + negativeCount]
-    return result
 
-def generate(prompt):
-    response = co.generate( 
-        model='xlarge', 
-        prompt = prompt,
-        max_tokens=40, 
-        temperature=0.8,
-        stop_sequences=["--"])
+    print("pos:", positiveCount, "neutral:", neutralCount, "neg:", negativeCount)
+    return positiveCount, neutralCount, negativeCount
 
-    return response.generations[0].text
 
-def summarize(prompt):
-    response = co.summarize(         
-        text= prompt,
-        model='summarize-xlarge', 
+def topic_analysis(prompt):
+    response = co.classify(
+        inputs=prompt,
+        examples=topic_examples,
+    )
+
+    sorted_topics = {topic: [] for topic in topics}
+
+    for i, x in enumerate(response.classifications):
+        if x.prediction in topics:
+            sorted_topics[x.prediction].append(prompt[i])
+
+    print(sorted_topics)
+    return sorted_topics
+
+
+def summarize(comments):
+
+    """
+    :param comments: comments from reddit in list
+    """
+
+    prompt = '\n'.join(comments)
+    response = co.summarize(
+        text=prompt,
+        model='summarize-xlarge',
         extractiveness='medium',
         length='medium',
         temperature='0.3'
     )
 
+    print(response.summary)
     return response.summary
 
-print(generate(prompt))
-print(summarize(text))
-
-
-def ai(data):
-    return 5
 
 class resultData:
-    def init(self, impression, summary):
-        self.impression = impression
-        self.summary = summary
+    def init(self, data):
+        self.sentiment = sentiment_analysis(data)
+        self.topic = topic_analysis(data)
+        self.summary = summarize(data)
