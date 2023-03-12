@@ -1,8 +1,8 @@
 import cohere as cohere
 from .examples import sentiment_examples, topic_examples
-import config
+from collections import Counter
 
-co = cohere.Client(config.cohere_token)
+co = cohere.Client('S4kgh2LIaQL0b8FFV0KI9KnguLR89eIpUSfaIrPA')
 
 topics = ["special effects", "cinematography", "soundtrack", "plot", "acting", "character"]
 
@@ -24,8 +24,7 @@ def sentiment_analysis(prompt):
         else:
             neutralCount += 1
 
-    print("pos:", positiveCount, "neutral:", neutralCount, "neg:", negativeCount)
-    return positiveCount, neutralCount, negativeCount
+    return [positiveCount, neutralCount, negativeCount]
 
 
 def topic_analysis(prompt):
@@ -40,8 +39,18 @@ def topic_analysis(prompt):
         if x.prediction in topics:
             sorted_topics[x.prediction].append(prompt[i])
 
-    print(sorted_topics)
-    return sorted_topics
+    topic_comments = {topic: len(sorted_topics[topic]) for topic in sorted_topics}
+
+    k = Counter(topic_comments)
+    top3 = k.most_common(3)
+
+    result = {}
+    for i in range(3):
+        topic = top3[i][0]
+        l = len(sorted_topics[topic])
+        result[i] = [topic, sorted_topics[topic][:min(5,l)]]
+
+    return result
 
 
 def summarize(comments):
@@ -50,21 +59,20 @@ def summarize(comments):
     :param comments: comments from reddit in list
     """
 
-    prompt = '\n'.join(comments)
+    prompt = "".join(comments)
     response = co.summarize(
         text=prompt,
         model='summarize-xlarge',
         extractiveness='medium',
         length='medium',
-        temperature='0.3'
     )
 
-    print(response.summary)
-    return response.summary
+    summary = response.summary
+    return summary
 
 
 class resultData:
-    def init(self, data):
+    def __init__(self,data):
         self.sentiment = sentiment_analysis(data)
         self.topic = topic_analysis(data)
         self.summary = summarize(data)

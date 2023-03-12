@@ -10,6 +10,19 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+ .hyphenate {
+  /* Careful, this breaks the word wherever it is without a hyphen /
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  / Adds a hyphen where the word breaks */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+  word-wrap: break-word;
+}
+
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -4576,6 +4589,8 @@ textarea.form-control-lg {
 
 .card-title {
   margin-bottom: 0.5rem;
+  text-color:black;
+  color:black;
 }
 
 .card-subtitle {

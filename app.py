@@ -1,38 +1,39 @@
-import json
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import datetime
-from .cohereTemp import sentiment_analysis, topic_analysis, summarize, resultData
+from .cohereTemp import resultData
 from .reddit_scrape import search_comments
 
 app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
 
-@app.route('/',methods=['GET','POST'])
-def index():   
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
     return render_template('index.html')
 
 
-@app.route("/result")
+@app.route("/result", methods=['POST'])
 def result():
-    error = None
     if request.method == 'POST':
+        subreddit = request.form.get("subreddit")[2:]
+        print(subreddit)
         title = request.form.get("title")
-        subreddit = request.form.get("subreddit")
+        thread_title, url, comments = search_comments(subreddit, title)
 
-        data = praw.scrape_reddit(title, subreddit)
+        if thread_title is not None:
+            print(thread_title)
+            result = resultData(comments)
+            return render_template('results.html',
+                                   user_title=title,
+                                   title=thread_title,
+                                   url=url, result=result,
+                                   subreddit=subreddit)
 
-        if data is None:
+        else:
             error = 'Error: Subreddit could not be found.'
-
-        result = resultData(data)
-        return render_template('result.html', dataToRender=result, error=error)
-
-    return redirect(url_for('index'))
+            return render_template('index.html', error=error)
 
 
 @app.route("/about")
 def about():
     return render_template('about.html')
-
-
-

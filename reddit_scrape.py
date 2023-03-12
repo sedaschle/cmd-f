@@ -11,7 +11,7 @@ reddit = praw.Reddit(client_id=config.praw_client_id, client_secret= config.praw
 co = cohere.Client(config.praw_cohere_token)
 
 min_comments = 10
-max_comments = 100
+max_comments = 90
 num_threads = 5
 
 
@@ -40,6 +40,6 @@ def search_comments(subreddit, title):
                     if isinstance(comment, MoreComments):
                         continue
                     comments.append(comment.body)
-                break
+                return thread.title, thread.url, comments
 
-    return comments
+    return None, None, None

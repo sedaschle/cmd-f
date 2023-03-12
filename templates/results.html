@@ -6,8 +6,7 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Redcommend</title>
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <!-- Font Awesome icons (free version)-->
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/icon.ico') }}" sizes="196x196"/>        <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
         <!-- Google fonts-->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Serif+Text">
@@ -22,32 +21,56 @@
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top bg-dark">
             <div class="container px-5">
                 <a class="navbar-brand">
-                    <img  src="\static\assets\reddit_logo.png" width = "30"/>
+                    <img  src={{url_for('static', filename="assets/img/reddit_logo.png")}} width = "30"/>
                 </a>
-                <a class="navbar-brand" href="#"> <img  src="\static\assets\Redcommend.png" height = "25"/> </a>
-    
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="#!">About Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">FAQ</a></li>
-                    </ul>
+                <a class="navbar-brand" href="#"> <img  src={{url_for('static', filename="assets/img/Redcommend.png")}} height = "25"/> </a>
 
             </div>
         </nav>     
 
-        <img class="image1" src="\static\assets\Group 10.png" />
+        <img class="image1" src={{url_for('static', filename="assets/img/Group 10.png")}}/>
 
         <!-- Page Content-->
         <div class="container px-4 px-lg-5 pt-5">
             <!-- Heading Row-->
             <div class="row gx-4 gx-lg-5 align-items-center my-5">
-                <div class="col-lg-5"><img class=" float-start rounded mb-4 mb-lg-0" src=" \static\assets\TEMP_GRAPH.png" height = "400" alt="..." /></div>
                 <div class="col-lg-5">
-                    <h1 class="font-weight-light">Movie</h1>
-                    <h3 class="font-weight-light">r/subreddit</h3>
-                    <p class="text-light  ">This is a summary based on this thread. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultrices tortor vel gravida mattis. Donec egestas, justo id blandit lacinia, mi ligula molestie mi, nec euismod orci tortor sed turpis. Suspendisse tincidunt pellentesque nibh. Curabitur pellentesque orci at arcu pellentesque vulputate. Praesent laoreet varius magna eget posuere</p>
-                    <p class="text-muted">
-                        Summarized from:
-                        <a href="#" class="text-muted">reddit.com/r/Baking/comments/11osehp/prettiest_lemon_bars_ive_ever_made/</a>
+                    <canvas id="donutChart" width="100" height="100" style="background-color:white;"></canvas>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                <script>
+                    var donutCanvas = document.getElementById("donutChart");
+
+                    var donutData = {
+                        labels: [
+                            "Positive",
+                            "Neutral",
+                            "Negative",
+                        ],
+                        datasets: [
+                            {
+                                data: [{{result.sentiment[0]}}, {{result.sentiment[1]}}, {{result.sentiment[2]}}],
+                                backgroundColor: [
+                                    "#9D2C39",
+                                    "#F9A0A0",
+                                    "#5D2424",
+                                ]
+                            }]
+                    };
+
+                    var donut = new Chart(donutCanvas, {
+                      type: 'doughnut',
+                      data: donutData,
+                      borderJoinStyle: 'bevel',
+                    });
+                </script>
+                <div class="col-lg-5">
+                    <h1 class="font-weight-light">{{user_title}}</h1>
+                    <h3 class="font-weight-light">r/{{subreddit}}</h3>
+                    <p class="text-light  ">{{result.summary}}</p>
+                    <p class="text-light">
+                        Summarized from "{{title}}":
+                        <a class="hyphenate text-light" href="{{url}}" class="text-muted">{{url}}</a>
                     </p>
                 </div>
             </div>
@@ -60,28 +83,37 @@
                 <div class="col-md-4 mb-5">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h2 class="card-title">Card One</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus.</p>
+                            <h2 class="text-dark"> {{result.topic[0][0]}} </h2>
+                            <ul>
+                            {%for result in result.topic[0][1]%}
+                                <li>{{result}}</li>
+                            {%endfor%}
+                            </ul>
                         </div>
-                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">More Info</a></div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-5">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h2 class="card-title">Card Two</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod tenetur ex natus at dolorem enim! Nesciunt pariatur voluptatem sunt quam eaque, vel, non in id dolore voluptates quos eligendi labore.</p>
+                            <h2 class="text-dark"> {{result.topic[1][0]}} </h2>
+                            <ul>
+                            {%for result in result.topic[1][1]%}
+                                <li>{{result}}</li>
+                            {%endfor%}
+                            </ul>
                         </div>
-                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">More Info</a></div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-5">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h2 class="card-title">Card Three</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus.</p>
+                            <h2 class="text-dark"> {{result.topic[2][0]}} </h2>
+                            <ul>
+                            {%for result in result.topic[2][1]%}
+                                <li>{{result}}</li>
+                            {%endfor%}
+                            </ul>
                         </div>
-                        <div class="card-footer"><a class="btn btn-primary btn-sm" href="#!">More Info</a></div>
                     </div>
                 </div>
             </div>
