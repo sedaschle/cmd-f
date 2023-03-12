@@ -17,7 +17,8 @@ def result():
     if request.method == 'POST':
         subreddit = request.form.get("subreddit")
         title = request.form.get("title")
-        data = search_comments(subreddit, title)
+        thread_title, url, comments = search_comments(subreddit, title)
+
 
         result = cohere_temp.ai(data)
 

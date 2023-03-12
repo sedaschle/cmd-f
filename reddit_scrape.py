@@ -38,6 +38,6 @@ def search_comments(subreddit, title):
                     if isinstance(comment, MoreComments):
                         continue
                     comments.append(comment.body)
-                break
+                return thread.title, thread.url, comments
 
-    return comments
+    return "", "", []
