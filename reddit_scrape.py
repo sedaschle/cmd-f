@@ -9,7 +9,7 @@ reddit = praw.Reddit(client_id='cSNsb9YTO5z6BGnDqbNsCQ', client_secret='BjhT3CA_
 co = cohere.Client('91gEJXPDaXllGGTsIKztRdRzCBWSg5PInZFucwA5')
 
 min_comments = 10
-max_comments = 100
+max_comments = 90
 num_threads = 5
 
 
@@ -40,4 +40,4 @@ def search_comments(subreddit, title):
                     comments.append(comment.body)
                 return thread.title, thread.url, comments
 
-    return "", "", []
+    return None, None, None
