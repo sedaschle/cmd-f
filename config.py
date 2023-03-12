@@ -1,0 +1,5 @@
+cohere_token="S4kgh2LIaQL0b8FFV0KI9KnguLR89eIpUSfaIrPA"
+praw_client_id="cSNsb9YTO5z6BGnDqbNsCQ"
+praw_client_secret="BjhT3CA_tvYHV2WELZOBJOeiwoDIDw"
+praw_user_agent="cmd-f"
+praw_cohere_token="91gEJXPDaXllGGTsIKztRdRzCBWSg5PInZFucwA5"

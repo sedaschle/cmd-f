@@ -2,11 +2,13 @@ import praw
 from praw.models import MoreComments
 import cohere
 import numpy as np
+import config
+
 
 # TODO: move to env file
-reddit = praw.Reddit(client_id='cSNsb9YTO5z6BGnDqbNsCQ', client_secret='BjhT3CA_tvYHV2WELZOBJOeiwoDIDw',
-                              user_agent='cmd-f')
-co = cohere.Client('91gEJXPDaXllGGTsIKztRdRzCBWSg5PInZFucwA5')
+reddit = praw.Reddit(client_id=config.praw_client_id, client_secret= config.praw_client_secret,
+                              user_agent=config.praw_user_agent)
+co = cohere.Client(config.praw_cohere_token)
 
 min_comments = 10
 max_comments = 100
