@@ -1,8 +1,8 @@
 import cohere as cohere
 from .examples import sentiment_examples, topic_examples
+import config
 
-#TODO: move to env
-co = cohere.Client('S4kgh2LIaQL0b8FFV0KI9KnguLR89eIpUSfaIrPA')
+co = cohere.Client(config.cohere_token)
 
 topics = ["special effects", "cinematography", "soundtrack", "plot", "acting", "character"]
 
