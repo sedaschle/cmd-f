@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import datetime
 from .cohereTemp import sentiment_analysis, topic_analysis, summarize, resultData
@@ -13,6 +14,7 @@ def index():
 
 @app.route("/result")
 def result():
+    error = None
     if request.method == 'POST':
         title = request.form.get("title")
         subreddit = request.form.get("subreddit")
@@ -20,11 +22,10 @@ def result():
         data = praw.scrape_reddit(title, subreddit)
 
         if data is None:
-            # TODO: send error message to front end
-            return Error
+            error = 'Error: Subreddit could not be found.'
 
         result = resultData(data)
-        return render_template('result.html', dataToRender=result)
+        return render_template('result.html', dataToRender=result, error=error)
 
     return redirect(url_for('index'))
 
