@@ -1,26 +1,29 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import datetime
-import cohere_temp
+from .cohereTemp import sentiment_analysis, topic_analysis, summarize, resultData
 from .reddit_scrape import search_comments
 
 app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
 
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/',methods=['GET','POST'])
+def index():   
     return render_template('index.html')
 
 
 @app.route("/result")
 def result():
     if request.method == 'POST':
-        subreddit = request.form.get("subreddit")
         title = request.form.get("title")
-        data = search_comments(subreddit, title)
+        subreddit = request.form.get("subreddit")
 
-        result = cohere_temp.ai(data)
+        data = praw.scrape_reddit(title, subreddit)
 
+        if data is None:
+            # TODO: send error message to front end
+            return Error
+
+        result = resultData(data)
         return render_template('result.html', dataToRender=result)
 
     return redirect(url_for('index'))
@@ -29,3 +32,6 @@ def result():
 @app.route("/about")
 def about():
     return render_template('about.html')
+
+
+
