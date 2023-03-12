@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect, session
-from .project import cohere, praw, gmaps, returninfo, level1, level2, level3, formatinstructions
 from datetime import datetime
+import cohere
+import praw
 import pickle
-import sys
 
 
 app = Flask(__name__)
@@ -48,44 +48,15 @@ def signup():
 
 @app.route("/result")
 def result():
-    data = scrape_reddit(session['difficulty'],session['location'], session['length'])
+    data = praw.scrape_reddit(session['difficulty'],session['location'], session['length'])
 
-    result = ai(data)
+    result = cohere.ai(data)
 
-    return render_template('directions.html',dataToRender=result)
+    return render_template('result.html',dataToRender=result)
 
 @app.route("/about")
 def about():
     return render_template('about.html')
 
-
-
-
-# @app.route("/directions")
-# def directions():
-
-
-
-# @app.route('/hello',methods=['GET','POST'])
-# def main():
-#     if request.method == 'POST':
-#         if request.form['fname']:
-#             now = datetime.now()
-#             directions_result = gmaps.directions("UBC bus loop",
-#                                      "1333 E.55th ave, vancouver BC, canada",
-#                                      mode="transit",
-#                                      departure_time=now)
-#             session['directions'] = print_directions(directions_result,[])
-#             return redirect(url_for('maps',num=1))
-#             #return profile(request.form['fname'])
-#         print(request.form['fname']) 
-
-    return render_template('main.html')
-@app.route('/maps')
-def maps():
-    num = request.args['num']
-    directions = session['directions']
-    #print(url_for('maps', num=2))
-    return f'{directions}\'s profile'
 
 
