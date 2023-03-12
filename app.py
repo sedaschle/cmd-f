@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect, session
-from .project import print_directions, gmaps, returninfo, level1, level2, level3, formatinstructions
+from .project import cohere, praw, gmaps, returninfo, level1, level2, level3, formatinstructions
 from datetime import datetime
 import pickle
 import sys
@@ -11,17 +11,9 @@ app.secret_key = 'BAD_SECRET_KEY'
 @app.route('/',methods=['GET','POST'])
 def index():
     if request.method == 'POST':
-        length = request.form.get("length")
-        difficulty = request.form.get("difficulty")
-        location = request.form.get("location")
-        session['length'] = length
-        session['difficulty'] = difficulty
-        session['location'] = location
-        return redirect(url_for('directions'))
-
-        
-       
-
+        title = request.form.get("title")
+        subreddit = request.form.get("subreddit")
+        return redirect(url_for('results'))
     return render_template('index.html')
 
 @app.route("/signup",methods=['GET','POST'])
@@ -54,11 +46,13 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route("/directions")
-def directions():
-    data = formatinstructions(session['difficulty'],session['location'], session['length'])
+@app.route("/result")
+def result():
+    data = scrape_reddit(session['difficulty'],session['location'], session['length'])
 
-    return render_template('directions.html',dataToRender=data)
+    result = ai(data)
+
+    return render_template('directions.html',dataToRender=result)
 
 @app.route("/about")
 def about():
