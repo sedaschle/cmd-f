@@ -1,7 +1,6 @@
 # cmd_f 2023
----
 ## Redcommend
-This is our project for cmd-f 2023 Hackathon.
+This is our project for the cmd-f 2023 Hackathon.
 
 **To run:**
 python -m flask run
